@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PasswordAudit | Shannon Entropy & NIST SP 800-63B Credential Analyzer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <header class="navbar">
+      <div class="nav-brand">
+        <div class="brand-key">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-1.5 1.5L16 7l-2-2-1.5 1.5M16 7l2 2m-4.5 1.5L12 12m-2-2a5 5 0 1 0 7 7 5 5 0 0 0-7-7z"/>
+          </svg>
+        </div>
+        <div>
+          <h2>PasswordAudit</h2>
+          <span class="tagline">CREDENTIAL HYGIENE & NIST 800-63B ANALYZER</span>
+        </div>
+      </div>
+
+      <div class="nav-metrics">
+        <div class="metric-chip">
+          <span class="label">AUDITS RUN</span>
+          <span class="value" id="totalAudits">0</span>
+        </div>
+        <div class="metric-chip">
+          <span class="label">NIST COMPLIANCE</span>
+          <span class="value text-emerald" id="complianceRate">0%</span>
+        </div>
+        <div class="metric-chip">
+          <span class="label">AVG ENTROPY</span>
+          <span class="value" id="avgEntropy">0.0 Bits</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <div class="hero-section">
+        <div>
+          <h1>Cryptographic Entropy & Attack Simulation</h1>
+          <p class="subtitle">Real-time Shannon informational entropy, keyspace resilience metrics, pattern recognition, and NIST SP 800-63B compliance evaluation.</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="nav-tabs">
+        <button class="tab-btn active" data-tab="single">Interactive Auditor</button>
+        <button class="tab-btn" data-tab="batch">Batch Organization Audit</button>
+        <button class="tab-btn" data-tab="history">Audit Telemetry Log</button>
+      </div>
+
+      <!-- TAB 1: Single Password Audit -->
+      <section class="tab-pane active" id="paneSingle">
+        <div class="audit-grid">
+          <!-- Left: Input Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Live Credential Evaluation</h3>
+              <span class="badge badge-info">Zero-Exfiltration Local Memory</span>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label>Identifier / Service Handle</label>
+                <input type="text" id="userInput" placeholder="e.g. corp\analyst_01" value="corp\analyst_01">
+              </div>
+
+              <div class="field">
+                <label>Password / Passphrase</label>
+                <div class="input-group">
+                  <input type="password" id="passwordInput" placeholder="Type or paste password to evaluate..." autofocus>
+                  <button type="button" class="btn-toggle" id="toggleVisibility">👁️</button>
+                </div>
+              </div>
+
+              <div class="entropy-meter-container">
+                <div class="meter-header">
+                  <span>Keyspace Entropy</span>
+                  <span id="entropyScoreText">0.0 Bits (Weak)</span>
+                </div>
+                <div class="meter-bar">
+                  <div class="meter-fill" id="meterFill" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="stats-row">
+                <div class="mini-stat">
+                  <span class="stat-lbl">Length</span>
+                  <span class="stat-val" id="charLength">0 chars</span>
+                </div>
+                <div class="mini-stat">
+                  <span class="stat-lbl">Shannon H</span>
+                  <span class="stat-val" id="shannonH">0.00</span>
+                </div>
+                <div class="mini-stat">
+                  <span class="stat-lbl">Charset Pool</span>
+                  <span class="stat-val" id="charsetPool">0 Symbols</span>
+                </div>
+                <div class="mini-stat">
+                  <span class="stat-lbl">SHA-1 Prefix</span>
+                  <span class="stat-val text-mono" id="sha1Prefix">-----</span>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="runAuditBtn">Execute Cryptographic Audit</button>
+            </div>
+          </div>
+
+          <!-- Right: Attack Simulation & Compliance -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Attack Resistance & NIST Compliance</h3>
+              <span class="badge" id="ratingBadge">PENDING</span>
+            </div>
+            <div class="card-body">
+              <h4 class="section-title">Brute-Force Attack Resistance</h4>
+              <div class="attack-matrix">
+                <div class="attack-item">
+                  <span class="attack-label">Online Throttled (1 req/s)</span>
+                  <span class="attack-val" id="timeOnlineThrottled">--</span>
+                </div>
+                <div class="attack-item">
+                  <span class="attack-label">Online Fast (1,000 req/s)</span>
+                  <span class="attack-val" id="timeOnlineFast">--</span>
+                </div>
+                <div class="attack-item">
+                  <span class="attack-label">Offline Slow Hash (Argon2 / 10k/s)</span>
+                  <span class="attack-val" id="timeOfflineSlow">--</span>
+                </div>
+                <div class="attack-item">
+                  <span class="attack-label">Offline GPU Cluster (100B/s)</span>
+                  <span class="attack-val" id="timeOfflineGpu">--</span>
+                </div>
+              </div>
+
+              <h4 class="section-title" style="margin-top: 1.5rem;">NIST SP 800-63B Rules Verification</h4>
+              <div class="compliance-list" id="complianceList">
+                <div class="compliance-item empty">Type a passphrase to view NIST standard verification.</div>
+              </div>
+
+              <h4 class="section-title" style="margin-top: 1.5rem;">Vulnerability & Pattern Alerts</h4>
+              <div class="patterns-list" id="patternsList">
+                <div class="pattern-item empty">No pattern anomalies detected yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Batch Organization Audit -->
+      <section class="tab-pane" id="paneBatch">
+        <div class="card">
+          <div class="card-header">
+            <h3>Enterprise Batch Credential Audit</h3>
+            <span class="badge badge-info">Analyze up to 50 passwords simultaneously</span>
+          </div>
+          <div class="card-body">
+            <div class="field">
+              <label>Passphrase List (One per line)</label>
+              <textarea id="batchInput" rows="6" placeholder="password123
+admin2024!
+Correct-Horse-Battery-Staple-2026
+qwertyuiop
+xK9#mQ2$vL8*zP4!"></textarea>
+            </div>
+            <button class="btn btn-primary" id="runBatchBtn">Run Batch Hygiene Audit</button>
+
+            <div class="batch-results" id="batchResults" style="display: none; margin-top: 2rem;">
+              <div class="batch-summary-cards">
+                <div class="sum-card">
+                  <span class="sum-lbl">Total Assessed</span>
+                  <span class="sum-val" id="sumTotal">0</span>
+                </div>
+                <div class="sum-card text-emerald">
+                  <span class="sum-lbl">Compliance Rate</span>
+                  <span class="sum-val" id="sumCompliance">0%</span>
+                </div>
+                <div class="sum-card text-red">
+                  <span class="sum-lbl">Critical Vulnerabilities</span>
+                  <span class="sum-val" id="sumCritical">0</span>
+                </div>
+                <div class="sum-card">
+                  <span class="sum-lbl">Avg Entropy</span>
+                  <span class="sum-val" id="sumEntropy">0.0 Bits</span>
+                </div>
+              </div>
+
+              <div class="table-container" style="margin-top: 1.5rem;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Masked String</th>
+                      <th>Length</th>
+                      <th>Keyspace Entropy</th>
+                      <th>Rating</th>
+                      <th>NIST Compliant</th>
+                      <th>Pattern Alerts</th>
+                    </tr>
+                  </thead>
+                  <tbody id="batchTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Audit Log History -->
+      <section class="tab-pane" id="paneHistory">
+        <div class="card">
+          <div class="card-header">
+            <h3>Credential Audit Historical Logs</h3>
+            <span class="badge badge-info">Write-Ahead SQLite Audit Log</span>
+          </div>
+          <div class="card-body">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Log ID</th>
+                    <th>Identifier</th>
+                    <th>Shannon H</th>
+                    <th>Keyspace Bits</th>
+                    <th>Rating</th>
+                    <th>NIST Status</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                  <tr><td colspan="7" class="text-center text-muted">Loading audit telemetry...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

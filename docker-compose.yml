@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  passwordaudit:
+    build: .
+    container_name: passwordaudit-service
+    ports:
+      - "8000:8000"
+    environment:
+      - PASSWORDAUDIT_PORT=8000
+      - PASSWORDAUDIT_DB_PATH=backend/data/passwordaudit.db
+    volumes:
+      - passwordaudit-data:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  passwordaudit-data:
